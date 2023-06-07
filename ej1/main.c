@@ -5,6 +5,7 @@
 
 #include "abb.h" /* TAD abb */
 
+#define exit_option 7
 
 void print_help(char *program_name) {
     /* Print the usage help of this program. */
@@ -69,16 +70,79 @@ int main(int argc, char *argv[]) {
     abb tree = abb_from_file(filepath);
 
     /*dumping the tree*/
-    abb_dump(tree);
-    if (!abb_is_empty(tree)) {
-        printf("\n");
-        printf("raiz: %d\n minimo: %d\n maximo: %d\n", abb_root(tree),
+//implementacion aqui
+    int user_input = 0;
+    abb_elem user_modify = 0;
+
+    while(user_input != exit_option){
+        printf("\n Elija una opcion entre las siguientes:\n"
+               "\n"
+               "\t---------------------------------------------------------------\n"
+               "\t* 1: Mostrar árbol por pantalla                               |\n"
+               "\t* 2: Agregar un elemento                                      |\n"
+               "\t* 3: Eliminar un elemento                                     |\n"
+               "\t* 4: Chequear existencia de elemento                          |\n"
+               "\t* 5: Mostrar longitud del árbol                               |\n"
+               "\t* 6: Mostrar raiz, máximo y mínimo del árbol                  |\n"
+               "\t* 7: Salir                                                    |\n"
+               "\t---------------------------------------------------------------\n"
+               "\n Escriba aqui su eleccion: ");
+        
+        scanf("%i", &user_input);
+        if(user_input>7 || user_input < 1){
+            printf("\n Porfavor introduzca una opcion valida!!!\n\n\n\n\n\n\n\n\n");
+        }
+
+        if (user_input == 1){
+            abb_dump(tree);
+            if (abb_is_empty(tree)){
+                printf("\nArbol vacio\n\n\n\n\n\n\n\n\n");
+            }
+        }
+        else if(user_input == 2){
+            printf("\n Introduzca el valor que quiere añadir al arbol: ");
+            scanf("%i", &user_modify);
+            tree = abb_add(tree, user_modify);
+
+        }
+        else if (user_input == 3){
+            printf("\n Introduzca el valor que quiere añadir al arbol: ");
+                scanf("%i", &user_modify);
+            if(!abb_exists(tree, user_modify)){
+                printf("\nEl elemento no existe en el arbol\n\n\n\n\n\n\n\n\n");
+            }
+            else{
+                abb_remove(tree, user_modify);
+            }
+        }
+        else if (user_input == 4){
+            printf("\n Introduzca el valor que quiere verificar si existe: ");
+                scanf("%i", &user_modify);
+            if(abb_exists(tree, user_modify)){
+                printf("\n El elemento existe en el arbol\n\n\n\n\n\n\n\n\n\n");
+            }
+            else{
+                printf("\nEl elemento no existe en el arbol\n\n\n\n\n\n\n\n\n");
+            }
+        }
+        else if (user_input == 5){
+            printf("\nLa longitud del arbol es %u\n\n\n\n\n\n\n\n\n", abb_length(tree));
+        }
+        else if (user_input == 6){
+            if (!abb_is_empty(tree)) {
+                printf("\n");
+                printf("raiz: %d\n minimo: %d\n maximo: %d\n\n\n\n\n\n\n\n\n", abb_root(tree),
                                                        abb_min(tree),
                                                        abb_max(tree));
-    } else {
-        printf("\nÁrbol vacío\n");
+            } 
+            else {
+                printf("\nÁrbol vacío\n");
+            }
+        }
+        
     }
 
+//libero memoria
     tree = abb_destroy(tree);
     /*
      * Modificar e implementar con un ciclo una interfaz que permita al usuario
