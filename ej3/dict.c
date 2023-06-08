@@ -16,10 +16,10 @@ static bool invrep(dict_t d) {
         if(d->key == NULL || (d->left == NULL && d->right == NULL)){
             inv = true;
         }
-        else if(d->right = NULL){
+        else if(d->right == NULL){
             inv = inv && invrep(d->left) && key_less(d->left->key, d->key);
         }
-        else if(d->left = NULL){
+        else if(d->left == NULL){
             inv = inv && invrep(d->right) && !key_less(d->right->key, d->key);
         }
         else{
@@ -37,7 +37,7 @@ dict_t dict_empty(void) {
     dict->key = NULL;
     dict->value = NULL;
 
-    assert(dict != NULL && (dict_length(dict) == 0u));
+    assert(invrep(dict) && (dict_length(dict) == 0u));
     return dict;
 }
 
@@ -61,15 +61,25 @@ dict_t dict_add(dict_t dict, key_t word, value_t def) {
     else{
         dict = dict_empty();
         dict->key = word;
-        dict->left = def;
+        dict->value = def;
     }
     return dict;
 }
 
 value_t dict_search(dict_t dict, key_t word) {
     key_t def=NULL;
-    /* need implementation */
-    return NULL;
+    if (dict != NULL){
+        if (key_eq(dict->key, word)){
+            def = dict->value;
+        }
+        else if (key_less(word, dict->key)){
+            def = dict_search(dict->left, word);
+        }
+        else{
+            def = dict_search(dict->right, word);
+        }
+    }
+    return def;
 }
 
 bool dict_exists(dict_t dict, key_t word) {
@@ -89,29 +99,57 @@ bool dict_exists(dict_t dict, key_t word) {
 }
 
 unsigned int dict_length(dict_t dict) {
+    assert(invrep(dict));
     unsigned int length = 0u;
-    while (dict != NULL && dict->key != NULL)
-    {
-        length = length + 1 + dict_length(dict->left) + dict_length(dict->right);
+    if (dict->key != NULL){
+        if(dict->left == NULL &&  dict->right == NULL){
+            length = 0u;
+        }
+        else if (dict->left == NULL ){
+            length = 1 + dict_length(dict->right);
+        }
+        else if (dict->right == NULL){
+            length = 1 + dict_length(dict->left);
+        }
     }
-    
     return length;
 }
 
 dict_t dict_remove(dict_t dict, key_t word) {
-    /* needs implementation */
+    if (dict_exists(dict, word)){
+       if (word == dict->key){
+           dict->right->left = dict->left;
+           
+           free(dict->key);
+           dict->key = NULL;
+           
+           free(dict->value);
+           dict->value = NULL;
+           
+           free(dict);
+       }
+       else if (key_less(word, dict->key)){
+           dict->left = dict_remove(dict->left, word);
+       }
+       else {
+           dict->right = dict_remove(dict->right, word);
+       }
+    }
     return dict;
 }
 
 dict_t dict_remove_all(dict_t dict) {
-    /* needs implementation */
+    dict_remove(dict, dict->key);
+    dict_remove(dict->left, dict->left->key);
+    dict_remove(dict->right, dict->right->key);
     return dict;
 }
 
-void dict_dump(dict_t dict, FILE *file) {
-    /* needs implementation */
-}
+/*void dict_dump(dict_t dict, FILE *file) {
+    //implementar
 
+}
+*/
 dict_t dict_destroy(dict_t dict) {
     dict = dict_remove_all(dict);
     free(dict);
