@@ -51,7 +51,7 @@ dict_t dict_add(dict_t dict, key_t word, value_t def) {
             free(dict->value);
             dict->value = def;
         }
-        else if (key_less(word, dict->key){
+        else if (key_less(word, dict->key)){
             dict->left = dict_add(dict->left, word, def);
         }
         else{
@@ -113,7 +113,8 @@ void dict_dump(dict_t dict, FILE *file) {
 }
 
 dict_t dict_destroy(dict_t dict) {
-    /* needs implementation */
+    dict = dict_remove_all(dict);
+    free(dict);
     return dict;
 }
 
