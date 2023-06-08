@@ -12,7 +12,7 @@ struct _node_t {
 
 static bool invrep(dict_t d) {
     bool inv = false;
-    if (inv != NULL){
+    if (d != NULL){
         if(d->key == NULL || (d->left == NULL && d->right == NULL)){
             inv = true;
         }
@@ -42,14 +42,16 @@ dict_t dict_empty(void) {
 }
 
 dict_t dict_add(dict_t dict, key_t word, value_t def) {
-    
-    if(dict_exists(dict, word)){
-        if (key_eq(dict->key, word)){
-            free(dict->value);
-            dict->value = NULL;
+    if (dict!=NULL){
+        if(dict->key == NULL){
+            dict->key = word;
             dict->value = def;
         }
-        else if (key_less(dict->key, word)){
+        else if (key_eq(dict->key, word)){
+            free(dict->value);
+            dict->value = def;
+        }
+        else if (key_less(word, dict->key){
             dict->left = dict_add(dict->left, word, def);
         }
         else{
@@ -57,28 +59,43 @@ dict_t dict_add(dict_t dict, key_t word, value_t def) {
         }
     }
     else{
-        if (dict->key == NULL){
-            dict->key = word;
-            dict->value = def;
-        }
+        dict = dict_empty();
+        dict->key = word;
+        dict->left = def;
     }
     return dict;
 }
 
 value_t dict_search(dict_t dict, key_t word) {
     key_t def=NULL;
-    
+    /* need implementation */
     return NULL;
 }
 
 bool dict_exists(dict_t dict, key_t word) {
-    /* needs implementation */
-    return false;
+    bool exists = false;
+    if (dict != NULL && dict->key != NULL){
+        if (key_less(dict->key, word)){
+            exists = dict_exists(dict->left, word);
+        }
+        else if (key_eq(dict->key, word)){
+            exists = true;
+        }
+        else{
+            exists = dict_exists(dict->right, word);
+        }
+    }
+    return exists;
 }
 
 unsigned int dict_length(dict_t dict) {
-    /* needs implementation */
-    return 0u;
+    unsigned int length = 0u;
+    while (dict != NULL && dict->key != NULL)
+    {
+        length = length + 1 + dict_length(dict->left) + dict_length(dict->right);
+    }
+    
+    return length;
 }
 
 dict_t dict_remove(dict_t dict, key_t word) {
