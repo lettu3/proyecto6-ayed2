@@ -106,7 +106,7 @@ int main(int argc, char *argv[]) {
 
         }
         else if (user_input == 3){
-            printf("\n Introduzca el valor que quiere añadir al arbol: ");
+            printf("\n Introduzca el valor que quiere eliminar del arbol: ");
                 scanf("%i", &user_modify);
             if(!abb_exists(tree, user_modify)){
                 printf("\nEl elemento no existe en el arbol\n\n\n\n\n\n\n\n\n");

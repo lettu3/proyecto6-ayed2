@@ -50,6 +50,12 @@ abb abb_empty(void) {
     return tree;
 }
 
+
+static bool is_leaf(abb tree){
+    bool res = tree->left == NULL  && tree->right == NULL;
+    return res;
+}
+
 abb abb_add(abb tree, abb_elem e) {
     assert(invrep(tree));
 
@@ -116,9 +122,44 @@ unsigned int abb_length(abb tree) {
 
 abb abb_remove(abb tree, abb_elem e) {
     assert(invrep(tree));
-    /**
-     * IMPLEMENTAR
-    */
+    //implementacion
+    if (abb_exists(tree, e)){
+        if (elem_eq(e, tree->elem)){
+            //
+            if (tree->left == NULL && tree->right == NULL){
+                free(tree);
+                tree = NULL;
+            }
+            else if (tree->left == NULL){
+                abb auxtree = tree;
+                tree = tree->right;
+                free(auxtree);
+                auxtree = NULL;
+            }
+            else if (tree->right == NULL){
+                abb auxtree = tree;
+                tree = tree->left;
+                free(auxtree);
+                auxtree = NULL;
+            }
+            else{
+                abb auxtree_search = tree->left;  //voy a buscar al elemento mas grande del subarbol izquierdo
+                while (!is_leaf(auxtree_search)){
+                    auxtree_search = auxtree_search->right;
+                }
+                tree->elem = auxtree_search->elem;  //ahora este elemento es la raiz de mi arbol/subarbol
+                tree->left = abb_remove(tree->left, tree->elem);               //elimino esa hoja             
+            }
+            //
+        }
+        else if (elem_less(e, tree->elem)){
+            tree->left = abb_remove(tree->left, e);
+        }
+        else{
+            tree->right = abb_remove(tree->right, e);
+        }        
+    }
+    //implementacion
     assert(invrep(tree) && !abb_exists(tree, e));
     return tree;
 }
